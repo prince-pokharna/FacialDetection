@@ -19,6 +19,7 @@ IMG_SIZE = 160  # Updated to match training
 CONFIDENCE_THRESHOLD = 0.70  # Minimum confidence to mark attendance (70%)
 SMOOTHING_FRAMES = 7  # Number of frames to smooth predictions
 COOLDOWN_SECONDS = 30  # Seconds before same person can be marked again
+SCREENSHOT_DIR = "demo_screenshots"  # Directory to save screenshots
 
 # ==================== LOAD MODEL & LABELS ====================
 print("Loading model and labels...")
@@ -109,6 +110,10 @@ last_attendance_time = {}  # name -> timestamp
 fps_start_time = time.time()
 fps_counter = 0
 current_fps = 0
+
+# Screenshot counter
+screenshot_counter = 0
+os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
 # ==================== HELPER FUNCTIONS ====================
 
@@ -214,7 +219,7 @@ def draw_ui(frame, faces_data):
     # Draw title and info
     cv2.putText(frame, "Face Recognition Attendance", (20, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
-    cv2.putText(frame, f"FPS: {current_fps:.1f} | Press 'Q' to quit", (20, 60),
+    cv2.putText(frame, f"FPS: {current_fps:.1f} | 'Q'-Quit | 'S'-Screenshot", (20, 60),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
     
     # Draw legend
@@ -225,6 +230,34 @@ def draw_ui(frame, faces_data):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
     
     return frame
+
+def save_screenshot(frame, faces_data):
+    """Save current frame as screenshot with timestamp"""
+    global screenshot_counter
+    screenshot_counter += 1
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{SCREENSHOT_DIR}/demo_{timestamp}_{screenshot_counter:03d}.jpg"
+    
+    # Add timestamp and info text to screenshot
+    frame_copy = frame.copy()
+    h, w = frame_copy.shape[:2]
+    
+    # Add timestamp at bottom
+    time_text = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cv2.putText(frame_copy, time_text, (w - 250, h - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    
+    # Save the screenshot
+    cv2.imwrite(filename, frame_copy, [cv2.IMWRITE_JPEG_QUALITY, 95])
+    
+    print(f"\n[OK] Screenshot saved: {filename}")
+    if len(faces_data) > 0:
+        print(f"     Captured {len(faces_data)} face(s):")
+        for face in faces_data:
+            print(f"       - {face['name']}: {face['confidence']:.2%}")
+    
+    return filename
 
 # ==================== MAIN LOOP ====================
 print("="*60)
@@ -334,11 +367,18 @@ try:
         # Display frame
         cv2.imshow("Face Recognition Attendance System", frame)
         
-        # Check for quit
+        # Check for key presses
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q') or key == ord('Q'):
             print("\nQuitting...")
             break
+        elif key == ord('s') or key == ord('S'):
+            # Save screenshot
+            save_screenshot(frame, faces_data)
+            # Show flash effect
+            flash = np.ones_like(frame) * 255
+            cv2.imshow("Face Recognition Attendance System", flash)
+            cv2.waitKey(100)  # Show flash for 100ms
 
 except KeyboardInterrupt:
     print("\n\nInterrupted by user")
