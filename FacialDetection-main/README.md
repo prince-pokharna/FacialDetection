@@ -8,19 +8,22 @@ An automated attendance marking system powered by deep learning that recognizes 
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## 📋 Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Model Architecture](#model-architecture)
-- [Performance](#performance)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [How It Works](#how-it-works)
-- [Results](#results)
-- [Future Enhancements](#future-enhancements)
-- [Contributing](#contributing)
-- [License](#license)
+- [Overview](#-overview)
+- [IMPORTANT: Model Not Included](#-important-model-not-included)
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Model Architecture](#-model-architecture)
+- [Performance](#-performance)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Project Structure](#-project-structure)
+- [How It Works](#-how-it-works)
+- [Results](#-results)
+- [Future Enhancements](#-future-enhancements)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
 
 ## 🎯 Overview
 
@@ -34,22 +37,52 @@ This project implements a complete end-to-end facial recognition system for auto
 - ✅ User-friendly visual interface
 - ✅ Production-ready deployment
 
+---
+
+## ⚠️ IMPORTANT: Model Not Included
+
+The trained deep learning model (`.keras` file) is not included in this repository due to GitHub file size limits. To run the system, you must download the dataset and run the training pipeline locally in this exact order:
+
+1. **Preprocess Dataset**: Detects and crops faces from raw images.
+   ```bash
+   python preprocess.py
+   ```
+2. **Split Dataset**: Splits the cropped face images into training and testing sets.
+   ```bash
+   python split.py
+   ```
+3. **Train the Model**: Trains the EfficientNetB0-based face recognition model (takes ~60 minutes).
+   ```bash
+   python model_train.py
+   ```
+4. **Run Live System**: Launches the live webcam attendance application.
+   ```bash
+   python webcam_integration.py
+   ```
+
+### Dataset Download Instructions
+This pipeline expects a subset of the **VGGFace2** dataset. You can find information and access/download instructions on the [Official VGGFace2 Website](http://www.robots.ox.ac.uk/~vgg/data/vgg_face2/) or download a subset from community platforms like [Kaggle](https://www.kaggle.com/datasets).
+
+---
+
 ## ✨ Features
 
 ### Core Functionality
-- **Real-time Face Detection**: Uses Haar Cascade for fast face detection
-- **Face Recognition**: Deep learning model trained on custom dataset
-- **Attendance Management**: Automatic marking with database storage
-- **Duplicate Prevention**: 30-second cooldown + date-based checking
-- **Confidence Thresholds**: Minimum 70% confidence required
-- **Prediction Smoothing**: Averages over 7 frames for stability
+- **Real-time Face Detection**: Uses Haar Cascade for fast face detection.
+- **Face Recognition**: Deep learning model trained on a custom dataset.
+- **Attendance Management**: Automatic marking with database storage.
+- **Duplicate Prevention**: 30-second cooldown + date-based checking.
+- **Confidence Thresholds**: Minimum 70% confidence required.
+- **Prediction Smoothing**: Averages predictions over 7 frames for stability.
 
 ### Technical Features
-- **Transfer Learning**: EfficientNetB0 pre-trained on ImageNet
-- **Data Augmentation**: 6 augmentation techniques for robustness
-- **Class Balancing**: Automatic handling of imbalanced datasets
-- **Two-Phase Training**: Feature extraction + fine-tuning
-- **Advanced Callbacks**: EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+- **Transfer Learning**: EfficientNetB0 pre-trained on ImageNet.
+- **Data Augmentation**: 6 augmentation techniques for robustness.
+- **Class Balancing**: Automatic handling of imbalanced datasets.
+- **Two-Phase Training**: Feature extraction + fine-tuning.
+- **Advanced Callbacks**: EarlyStopping, ReduceLROnPlateau, and ModelCheckpoint.
+
+---
 
 ## 🛠 Technology Stack
 
@@ -62,6 +95,8 @@ This project implements a complete end-to-end facial recognition system for auto
 | **Visualization** | Matplotlib, Seaborn | Training metrics and confusion matrices |
 | **Metrics** | scikit-learn | Model evaluation |
 | **Language** | Python 3.8+ | Core implementation |
+
+---
 
 ## 🏗 Model Architecture
 
@@ -93,6 +128,8 @@ Output (25 classes, Softmax)
 - Class Weighting
 - Gaussian Noise augmentation
 
+---
+
 ## 📊 Performance
 
 ### Baseline Model (MobileNetV2)
@@ -112,6 +149,8 @@ Output (25 classes, Softmax)
 - **Batch Size**: 32
 - **Optimizer**: Adam with learning rate scheduling
 
+---
+
 ## 🚀 Installation
 
 ### Prerequisites
@@ -122,8 +161,8 @@ GPU recommended (optional, but speeds up training)
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/yourusername/face-recognition-attendance.git
-cd face-recognition-attendance
+git clone https://github.com/prince-pokharna/FacialDetection.git
+cd FacialDetection
 ```
 
 ### Step 2: Create Virtual Environment
@@ -139,93 +178,78 @@ source attendance/bin/activate
 
 ### Step 3: Install Dependencies
 ```bash
-pip install tensorflow opencv-python numpy matplotlib seaborn scikit-learn
-```
-
-### Alternative: Install from requirements.txt
-```bash
 pip install -r requirements.txt
 ```
 
+---
+
 ## 💻 Usage
 
-### Quick Start
+### Pipeline Run (Train and Evaluate)
 
-#### 1. Evaluate Current Model
+#### 1. Setup the raw dataset
+Extract your downloaded VGGFace2 subset into a folder. Run the subset utility scripts if needed:
 ```bash
-python model_evaluation_improved.py
-```
-This will show you the current model's accuracy and generate confusion matrices.
-
-#### 2. Train Improved Model (Optional)
-```bash
-python model_train_improved.py
-```
-This trains a new model with improved architecture. Takes 45-60 minutes.
-
-#### 3. Run Attendance System
-```bash
-python webcam_integration.py
-```
-Starts the real-time attendance system. Press 'Q' to quit.
-
-### Detailed Workflow
-
-#### Data Preparation (Already Done)
-```bash
-# Select subset of people
+# Select subset of people (e.g. from archive/train)
 python sub.py
 
 # Reduce to 150 images per person
 python subred.py
+```
 
-# Detect and crop faces
+#### 2. Detect and Crop Faces
+```bash
 python preprocess.py
+```
+This detects faces using Haar Cascades, crops them, and resizes them to 128x128 pixels.
 
-# Split into train/test
+#### 3. Split dataset
+```bash
 python split.py
 ```
+Splits the cropped face images into `dataset_train` and `dataset_test` folders.
 
-#### Training from Scratch
+#### 4. Train the Model
 ```bash
-# Train improved model
-python model_train_improved.py
+python model_train.py
 ```
-
+Trains the deep learning model. 
 **Output Files:**
 - `face_recognition_model_improved_final.keras` - Final trained model
 - `best_model_improved_finetuned.keras` - Best checkpoint
 - `labels.json` - Class labels
 - `training_history_improved.png` - Training curves
 
-#### Evaluation
+#### 5. Evaluate Model
 ```bash
-# Evaluate model performance
 python model_evaluation_improved.py
 ```
-
+Generates accuracy reports and confusion matrices.
 **Output Files:**
 - `confusion_matrix.png` - Confusion matrix
 - `confusion_matrix_normalized.png` - Normalized confusion matrix
 - `evaluation_results.json` - Detailed metrics
 
-#### Deployment
+#### 6. Run Attendance System
 ```bash
-# Run webcam attendance system
 python webcam_integration.py
 ```
+Starts the real-time webcam attendance marking application. Press `Q` to quit.
 
-**Controls:**
-- Press `Q` to quit
-- Face must be detected with 70%+ confidence
-- Attendance marked once per day per person
+**Webcam System Features:**
+- Face must be detected with 70%+ confidence.
+- Attendance is recorded in `attendance.db` (SQLite database).
+- Cooldown of 30 seconds per person to prevent duplicate entries.
+- One entry per day per person.
+
+---
 
 ## 📁 Project Structure
 
 ```
-face-recognition-attendance/
+FacialDetection/
 │
-├── model_train_improved.py          # Improved training script
+├── model_train.py                   # Model training script
 ├── model_evaluation_improved.py     # Evaluation script
 ├── webcam_integration.py            # Real-time attendance system
 ├── preprocess.py                    # Face detection & cropping
@@ -234,55 +258,49 @@ face-recognition-attendance/
 ├── subred.py                        # Dataset reduction
 │
 ├── labels.json                      # Class labels
-├── attendance.db                    # SQLite attendance database
+├── attendance.db                    # SQLite attendance database (generated automatically)
+├── requirements.txt                 # Python dependencies
 │
-├── dataset_train/                   # Training images (25 folders)
-├── dataset_test/                    # Testing images (25 folders)
+├── dataset_train/                   # Training images (generated automatically)
+├── dataset_test/                    # Testing images (generated automatically)
 │
-├── logs/                            # TensorBoard logs
-│
-├── README.md                        # This file
-├── PROJECT_DOCUMENTATION.md         # Detailed documentation
-├── PRESENTATION_GUIDE.md           # Presentation tips
-├── QUICK_START.txt                 # Quick reference
-│
-└── .gitignore                      # Git ignore rules
+├── logs/                            # TensorBoard logs (generated automatically)
+└── README.md                        # This file
 ```
+
+---
 
 ## 🔬 How It Works
 
 ### 1. Data Collection & Preprocessing
-- Collect face images from VGGFace2 dataset
-- Detect faces using Haar Cascade
-- Crop and resize to 128x128 pixels
-- Split into 80% training, 20% testing
+- Collect face images from the VGGFace2 dataset.
+- Detect faces using Haar Cascades.
+- Crop and resize to 128x128 pixels.
+- Split into 80% training and 20% testing sets.
 
 ### 2. Model Training
 **Phase 1: Feature Extraction (60 epochs)**
-- Freeze EfficientNetB0 base model
-- Train only top layers
-- Learning rate: 0.001
-- Apply class weights for balance
+- Freeze the pre-trained base model.
+- Train only the custom dense top layers.
+- Apply class weights to handle training imbalance.
 
 **Phase 2: Fine-Tuning (40 epochs)**
-- Unfreeze top layers of EfficientNetB0
-- Fine-tune entire model
-- Learning rate: 0.000005
-- Continue with class weights
+- Unfreeze top layers of the base model.
+- Fine-tune the entire model with a very small learning rate (5e-6).
 
 ### 3. Real-Time Recognition
-- Capture webcam frame
-- Detect faces using Haar Cascade
-- Extract and preprocess face region
-- Predict using trained model
-- Smooth predictions over 7 frames
-- Mark attendance if confidence ≥ 70%
+- Capture webcam frame.
+- Detect faces using Haar Cascades.
+- Preprocess face region and predict using the trained model.
+- Smooth prediction probabilities over 7 frames.
+- Mark attendance if predicted confidence is 70% or higher.
 
 ### 4. Attendance Management
-- Store in SQLite database
-- Check for duplicate entries
-- 30-second cooldown per person
-- One entry per day per person
+- Store records in an SQLite database.
+- Cooldown of 30 seconds per person.
+- Maximum one record per day per person.
+
+---
 
 ## 📈 Results
 
@@ -301,34 +319,27 @@ face-recognition-attendance/
 - n000234: 85.71%
 
 **Areas for Improvement:**
-- n000115: 29.63% → Needs more training data
-- n000501: 30.77% → Needs better quality images
+- n000115: 29.63% → Needs more training data.
+- n000501: 30.77% → Needs higher-resolution/better quality images.
 
-### Confusion Matrix
-See `confusion_matrix.png` after running evaluation.
+---
 
 ## 🔮 Future Enhancements
 
 ### Short-term
 - [ ] Add liveness detection (blink detection)
 - [ ] Support for multiple cameras
-- [ ] Export attendance to Excel/PDF
-- [ ] Admin dashboard with analytics
-- [ ] Email notifications
+- [ ] Export attendance logs to Excel/PDF
+- [ ] Admin dashboard with statistics
+- [ ] Email/Slack notifications for marked attendance
 
 ### Long-term
 - [ ] Mobile app integration
-- [ ] Cloud database (Firebase/AWS)
-- [ ] Face mask recognition
-- [ ] Emotion detection
-- [ ] Multi-face simultaneous recognition
-- [ ] API for integration with other systems
+- [ ] Cloud database synchronization (Firebase/AWS)
+- [ ] Face mask detection and recognition
+- [ ] Simultaneous multi-face recognition
 
-### Model Improvements
-- [ ] Use deeper models (EfficientNetB3/B4)
-- [ ] Implement ArcFace loss
-- [ ] Active learning for continuous improvement
-- [ ] Model compression for faster inference
+---
 
 ## 🤝 Contributing
 
@@ -340,39 +351,29 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+---
+
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-
-## 🙏 Acknowledgments
-
-- VGGFace2 dataset for training data
-- TensorFlow and Keras teams for the framework
-- OpenCV community for computer vision tools
-- EfficientNet authors for the base model architecture
-
-## 📞 Support
-
-For issues, questions, or contributions:
-- Open an issue on GitHub
-- Email: your.email@example.com
-
-## 📚 Additional Documentation
-
-- [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md) - Detailed technical documentation
-- [PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md) - Tips for presenting this project
-- [FIXES_AND_TESTING.md](FIXES_AND_TESTING.md) - Bug fixes and testing notes
-- [QUICK_START.txt](QUICK_START.txt) - Quick reference guide
+This project is licensed under the MIT License.
 
 ---
 
-**⭐ If you found this project helpful, please consider giving it a star!**
+## 👨‍💻 Author
+
+**Prince Pokharna**
+- GitHub: [prince-pokharna](https://github.com/prince-pokharna)
+
+---
+
+## 🙏 Acknowledgments
+
+- VGGFace2 dataset authors for the training dataset.
+- TensorFlow and Keras teams for the deep learning frameworks.
+- OpenCV community for the computer vision tools.
+- EfficientNet authors for the base model architecture.
+
+---
 
 ## 📊 Project Statistics
 
@@ -382,21 +383,3 @@ For issues, questions, or contributions:
 - **Number of Classes**: 25
 - **Accuracy**: 75%+
 - **Real-time Performance**: 30 FPS
-
-## 🎓 Educational Value
-
-This project demonstrates:
-- Transfer Learning
-- Data Augmentation
-- Class Balancing
-- Two-Phase Training
-- Real-time Computer Vision
-- Database Integration
-- Production Deployment
-
-Perfect for:
-- College/University projects
-- Machine Learning portfolios
-- Deep Learning practice
-- Computer Vision applications
-

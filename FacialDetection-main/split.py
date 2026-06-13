@@ -1,7 +1,26 @@
+# split.py
+# This script is part of a face recognition data pipeline.
+# It splits the cropped face images dataset into training and testing subsets, ensuring each class gets a representative test split.
+# Input: A directory containing preprocessed identity subfolders (e.g., 'cropped_dataset').
+# Output: Separate 'dataset_train' and 'dataset_test' directories containing matching identity folders with images split by test_ratio.
+
 import os
 import shutil
 import random
+import sys
 from pathlib import Path
+
+# Configuration variables
+SOURCE_DIR = "cropped_dataset"
+TRAIN_DIR = "dataset_train"
+TEST_DIR = "dataset_test"
+TEST_RATIO = 0.2
+
+# Basic error handling
+if not os.path.exists(SOURCE_DIR):
+    print(f"Error: Expected source directory '{SOURCE_DIR}' does not exist.")
+    print("Please make sure you have run the preprocessing script ('python preprocess.py') first.")
+    sys.exit(1)
 
 def create_train_test_split(source_dir, train_dir, test_dir, test_ratio=0.2):
     """
@@ -19,6 +38,10 @@ def create_train_test_split(source_dir, train_dir, test_dir, test_ratio=0.2):
         images = [f for f in os.listdir(person_path) 
                   if f.endswith(('.jpg', '.jpeg', '.png'))]
         
+        if len(images) == 0:
+            print(f"Warning: No images found for {person_name}. Skipping split for this class.")
+            continue
+            
         # Shuffle and split
         random.shuffle(images)
         split_idx = max(1, int(len(images) * test_ratio))  # At least 1 test image
@@ -49,8 +72,8 @@ def create_train_test_split(source_dir, train_dir, test_dir, test_ratio=0.2):
 
 # Run this BEFORE training
 create_train_test_split(
-    "cropped_dataset",
-    "dataset_train",
-    "dataset_test",
-    test_ratio=0.2
+    SOURCE_DIR,
+    TRAIN_DIR,
+    TEST_DIR,
+    test_ratio=TEST_RATIO
 )

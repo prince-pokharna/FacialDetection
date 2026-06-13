@@ -1,18 +1,32 @@
-# preprocess.py - Improved Face Detection and Cropping
+# preprocess.py
+# This script is part of a face recognition data pipeline.
+# It detects, crops, and resizes faces from raw images using Haar Cascade, applying preprocessing for training.
+# Input: A directory containing identity subfolders with raw images (e.g., 'subset').
+# Output: A directory with preprocessed and cropped face images (e.g., 'cropped_dataset') resized to IMG_SIZE.
+
 import cv2
 import os
 import glob
+import sys
 from tqdm import tqdm
+
+# Configuration
+INPUT_ROOT = "subset"
+OUT_ROOT = "cropped_dataset"
+IMG_SIZE = 128
+FACE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+
+# Basic error handling
+if not os.path.exists(INPUT_ROOT):
+    print(f"Error: Expected input directory '{INPUT_ROOT}' does not exist.")
+    print("Please make sure you have run the subset generation (sub.py and subred.py) first.")
+    sys.exit(1)
 
 print("="*60)
 print("Face Detection and Preprocessing - IMPROVED")
 print("="*60 + "\n")
 
-# Configuration
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-input_root = "subset"
-out_root = "cropped_dataset"
-IMG_SIZE = 128
+face_cascade = cv2.CascadeClassifier(FACE_CASCADE_PATH)
 
 # Statistics tracking
 total_images = 0
@@ -20,20 +34,20 @@ detected_faces = 0
 failed_detections = 0
 
 # Create output directory
-os.makedirs(out_root, exist_ok=True)
+os.makedirs(OUT_ROOT, exist_ok=True)
 
-print(f"Input directory: {input_root}")
-print(f"Output directory: {out_root}")
+print(f"Input directory: {INPUT_ROOT}")
+print(f"Output directory: {OUT_ROOT}")
 print(f"Target image size: {IMG_SIZE}x{IMG_SIZE}\n")
 
 # Get all person folders
-person_folders = [f for f in os.listdir(input_root) if os.path.isdir(os.path.join(input_root, f))]
+person_folders = [f for f in os.listdir(INPUT_ROOT) if os.path.isdir(os.path.join(INPUT_ROOT, f))]
 print(f"Found {len(person_folders)} person folders\n")
 
 # Process each person
 for person_idx, person_folder in enumerate(person_folders, 1):
-    src = os.path.join(input_root, person_folder)
-    dst = os.path.join(out_root, person_folder)
+    src = os.path.join(INPUT_ROOT, person_folder)
+    dst = os.path.join(OUT_ROOT, person_folder)
     os.makedirs(dst, exist_ok=True)
     
     # Get all images for this person
@@ -107,8 +121,11 @@ for person_idx, person_folder in enumerate(person_folders, 1):
 print("\n" + "="*60)
 print("Preprocessing Complete!")
 print("="*60)
-print(f"\nTotal images processed: {total_images}")
-print(f"Successfully detected: {detected_faces} ({detected_faces/total_images*100:.1f}%)")
-print(f"Failed detections: {failed_detections} ({failed_detections/total_images*100:.1f}%)")
-print(f"\nOutput saved to: {out_root}/")
+if total_images > 0:
+    print(f"\nTotal images processed: {total_images}")
+    print(f"Successfully detected: {detected_faces} ({detected_faces/total_images*100:.1f}%)")
+    print(f"Failed detections: {failed_detections} ({failed_detections/total_images*100:.1f}%)")
+else:
+    print("\nNo images found to process.")
+print(f"\nOutput saved to: {OUT_ROOT}/")
 print("\nNext step: Run 'python split.py' to create train/test split")

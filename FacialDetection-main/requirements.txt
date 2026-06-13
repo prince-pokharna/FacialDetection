@@ -1,18 +1,27 @@
-# Core Dependencies
-tensorflow>=2.10.0
-opencv-python>=4.7.0
-numpy>=1.23.0
-matplotlib>=3.6.0
-seaborn>=0.12.0
-scikit-learn>=1.2.0
+# Core Deep Learning Framework
+# Used for model building, training, and running inference
+tensorflow==2.16.2
 
-# Optional but recommended
-pandas>=1.5.0
-Pillow>=9.3.0
+# Computer Vision & Image Preprocessing
+# Used for face detection, image loading, resizing, and normalization
+opencv-python==4.9.0.80
 
-# For data handling
-scipy>=1.9.0
+# Numerical Computing
+# Core array and matrix manipulation library, compatible with TensorFlow 2.16.x
+numpy==1.26.4
 
-# Note: If you have GPU, install tensorflow-gpu instead of tensorflow
-# pip install tensorflow-gpu>=2.10.0
+# Data Visualization
+# Used for plotting training history, validation curves, and confusion matrices
+matplotlib==3.9.1
+seaborn==0.13.2
 
+# Machine Learning & Evaluation Metrics
+# Used for classification reports, precision/recall calculations, and class weight helpers
+scikit-learn==1.5.1
+
+# Progress Bars
+# Used for visual feedback during data preprocessing
+tqdm==4.66.4
+
+# Note on Database Support:
+# sqlite3 is a built-in Python module and does not require installation via pip.
