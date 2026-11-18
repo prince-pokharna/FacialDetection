@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-11-19 02:48:13",
+  "roc_auc": 0.7597,
+  "eer_percent": 30.06,
+  "eer_threshold": 0.0189,
+  "operating_points": {
+    "FAR_0_1_percent": {
+      "threshold": 0.1394,
+      "true_positive_rate": 1.63
+    },
+    "FAR_1_percent": {
+      "threshold": 0.0981,
+      "true_positive_rate": 9.63
+    }
+  },
+  "identification": {
+    "rank_1_accuracy_percent": 38.0,
+    "rank_5_accuracy_percent": 47.0,
+    "open_set_unknown_rejection_percent": 69.0
+  },
+  "environmental_robustness_tpr": {
+    "normal": 9.63,
+    "low_light": 9.05,
+    "angle": 8.47,
+    "occlusion": 7.9
+  },
+  "latency_ms_per_face": 8.47
+}

@@ -1,0 +1,79 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+attendance/
+
+# Node & Frontend
+node_modules/
+.npm/
+dist/
+build/
+.next/
+.vite/
+*.local
+
+# Heavy Model Binaries (>50MB) & Checkpoints
+*.keras
+*.h5
+*.hdf5
+*.pb
+*.ckpt
+*.pth
+*.pt
+*.safetensors
+*.bin
+*.tar.gz
+*.zip
+# Allow lightweight optimized ONNX models (<50MB) if tracked or use external storage
+ml/weights/*.onnx
+!ml/weights/.gitkeep
+
+# Datasets
+train/
+subset/
+cropped_dataset/
+dataset_train/
+dataset_test/
+datasets/
+data/raw/
+data/processed/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+
+# Logs & Metrics
+logs/
+*.log
+mlruns/
+wandb/
+
+# Test & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.local
+.env.*.local
+!*.example
