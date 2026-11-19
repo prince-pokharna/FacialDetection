@@ -1,0 +1,33 @@
+{
+  "metric": "cosine_similarity",
+  "embedding_dim": 512,
+  "normalized": true,
+  "operating_points": {
+    "FAR_0_1_percent": {
+      "threshold": 0.50,
+      "target_far": 0.001,
+      "description": "High security mode (1 false accept per 1000 imposter presentations)"
+    },
+    "FAR_1_percent": {
+      "threshold": 0.42,
+      "target_far": 0.01,
+      "description": "Balanced attendance kiosk mode (1 false accept per 100 imposter presentations)"
+    },
+    "EER": {
+      "threshold": 0.38,
+      "description": "Equal Error Rate operating point"
+    }
+  },
+  "quality_thresholds": {
+    "min_sharpness": 65.0,
+    "min_face_size": [60, 60],
+    "min_brightness": 40.0,
+    "max_brightness": 230.0,
+    "liveness_threshold": 0.50
+  },
+  "smoothing": {
+    "window_size": 5,
+    "min_agreements": 3,
+    "cooldown_seconds": 30
+  }
+}
